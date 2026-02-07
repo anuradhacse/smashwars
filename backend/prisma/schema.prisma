@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SyncStatus {
+  ok
+  stale
+  in_progress
+  failed
+}
+
+enum EntityType {
+  player
+  event
+  club
+}
+
+model Player {
+  id            Int           @id
+  displayName   String
+  clubId        Int?
+  lastSyncedAt  DateTime?
+  syncStatus    SyncStatus    @default(stale)
+  syncError     String?
+  histories     PlayerHistory[]
+  eventSummary  EventSummary[]
+  clubMemberships ClubMember[]
+}
+
+model Event {
+  id        Int           @id
+  name      String
+  date      DateTime
+  summaries EventSummary[]
+  matches   EventMatch[]
+}
+
+model PlayerHistory {
+  playerId     Int
+  eventId      Int
+  eventDate    DateTime
+  eventName    String
+  initialMean  Int
+  initialStDev Int
+  pointChange  Int
+  finalMean    Int
+  finalStDev   Int
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@id([playerId, eventId])
+  @@index([playerId, eventDate])
+}
+
+model EventSummary {
+  eventId      Int
+  playerId     Int
+  playerName   String?
+  initialMean  Int
+  initialStDev Int
+  pointChange  Int
+  finalMean    Int
+  finalStDev   Int
+
+  player Player @relation(fields: [playerId], references: [id])
+  event  Event  @relation(fields: [eventId], references: [id])
+
+  @@id([eventId, playerId])
+}
+
+model EventMatch {
+  id                Int      @id @default(autoincrement())
+  eventId           Int
+  playerId          Int?
+  opponentName      String?
+  winnerId          Int
+  loserId           Int
+  score             String
+  winnerDelta       Int
+  winnerOppMean     Int
+  winnerOppStDev    Int
+  loserDelta        Int
+  loserOppMean      Int
+  loserOppStDev     Int
+  matchesPairPlayed Int
+  rowIndex          Int
+
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@index([eventId])
+  @@index([playerId])
+}
+
+model Club {
+  id           Int          @id
+  name         String
+  lastSyncedAt DateTime?
+  syncStatus   SyncStatus   @default(stale)
+  syncError    String?
+  members      ClubMember[]
+}
+
+model ClubMember {
+  clubId         Int
+  playerId       Int
+  rank           Int?
+  ratingMean     Int?
+  ratingStDev    Int?
+  lastPlayedDate DateTime?
+  displayName    String
+
+  club   Club   @relation(fields: [clubId], references: [id])
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@id([clubId, playerId])
+  @@index([playerId])
+}
+
+model SyncJob {
+  id          Int        @id @default(autoincrement())
+  entityType  EntityType
+  entityId    Int
+  status      SyncStatus @default(in_progress)
+  requestedAt DateTime   @default(now())
+  completedAt DateTime?
+  error       String?
+
+  @@index([entityType, entityId])
+}
