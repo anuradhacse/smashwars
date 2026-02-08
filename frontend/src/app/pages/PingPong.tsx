@@ -1,16 +1,26 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRive, Layout, Fit, Alignment } from '@rive-app/react-canvas';
+import { useState } from 'react';
 
 export function PingPong() {
-  const { RiveComponent } = useRive({
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [started, setStarted] = useState(!isMobile);
+
+  const { RiveComponent, rive } = useRive({
     src: '/ping-pong.riv',
-    autoplay: true,
+    autoplay: !isMobile,
     stateMachines: 'State Machine 1',
     layout: new Layout({
       fit: Fit.Contain,
       alignment: Alignment.Center,
     }),
   });
+
+  const handleStart = () => {
+    setStarted(true);
+    rive?.play();
+  };
 
   return (
     <Box sx={{ bgcolor: '#111', minHeight: '100%' }}>
@@ -26,12 +36,29 @@ export function PingPong() {
             mx: 'auto',
             borderRadius: 4,
             overflow: 'hidden',
+            position: 'relative',
           }}
         >
           <RiveComponent style={{ width: '100%', height: '100%' }} />
+          {!started && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'rgba(0,0,0,0.6)',
+              }}
+            >
+              <Button variant="contained" size="large" onClick={handleStart}>
+                Tap to play
+              </Button>
+            </Box>
+          )}
         </Box>
         <Typography variant="body2" sx={{ mt: 2, color: 'rgba(255,255,255,0.5)' }}>
-          Click and drag the blue paddle
+          Press and drag the blue paddle
         </Typography>
       </Container>
     </Box>

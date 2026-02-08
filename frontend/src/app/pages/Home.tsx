@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Badge,
   Box,
@@ -17,6 +18,7 @@ import {
   Menu,
   MenuItem,
   Skeleton,
+  Snackbar,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -66,7 +68,7 @@ export function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
-  const { syncing, triggerSync } = useSync();
+  const { syncing, syncError: syncErr, lastSyncMessage, triggerSync, clearSyncMessage } = useSync();
   const [syncMenuAnchor, setSyncMenuAnchor] = useState<null | HTMLElement>(null);
 
   // Load avatar from DB on mount
@@ -310,35 +312,53 @@ export function Home() {
             size={{ xs: 12, md: 5 }}
             sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}
           >
-            {!isMobile && (
-              <>
-                <Button
-                  variant="contained"
-                  startIcon={
-                    syncing ? <CircularProgress size={18} color="inherit" /> : <RefreshIcon />
-                  }
-                  onClick={handleSyncMenuOpen}
-                  disabled={syncing}
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography variant="body2" color="text.secondary">
+                  Showing
+                </Typography>
+                <ToggleButtonGroup
+                  value={timeRange}
+                  exclusive
+                  onChange={(_e, v) => v && setTimeRange(v)}
+                  size="small"
+                  aria-label="Select time range"
                 >
-                  {syncing ? 'Syncing…' : 'Sync data'}
-                </Button>
-                <Menu
-                  anchorEl={syncMenuAnchor}
-                  open={Boolean(syncMenuAnchor)}
-                  onClose={handleSyncMenuClose}
-                >
-                  <MenuItem onClick={() => handleSyncSelect(12)}>
-                    <ListItemText>12 months</ListItemText>
-                  </MenuItem>
-                  <MenuItem onClick={() => handleSyncSelect(24)}>
-                    <ListItemText>24 months</ListItemText>
-                  </MenuItem>
-                  <MenuItem onClick={() => handleSyncSelect('all')}>
-                    <ListItemText>All history</ListItemText>
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
+                  <ToggleButton value="3m">3M</ToggleButton>
+                  <ToggleButton value="6m">6M</ToggleButton>
+                  <ToggleButton value="12m">12M</ToggleButton>
+                  <ToggleButton value="all">All</ToggleButton>
+                </ToggleButtonGroup>
+              </Stack>
+              {!isMobile && (
+                <>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<RefreshIcon />}
+                    onClick={handleSyncMenuOpen}
+                    sx={{ whiteSpace: 'nowrap' }}
+                  >
+                    Sync player data
+                  </Button>
+                  <Menu
+                    anchorEl={syncMenuAnchor}
+                    open={Boolean(syncMenuAnchor)}
+                    onClose={handleSyncMenuClose}
+                  >
+                    <MenuItem onClick={() => handleSyncSelect(12)}>
+                      <ListItemText>12 months</ListItemText>
+                    </MenuItem>
+                    <MenuItem onClick={() => handleSyncSelect(24)}>
+                      <ListItemText>24 months</ListItemText>
+                    </MenuItem>
+                    <MenuItem onClick={() => handleSyncSelect('all')}>
+                      <ListItemText>All history</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </>
+              )}
+            </Stack>
           </Grid>
         </Grid>
 
@@ -746,34 +766,18 @@ export function Home() {
             >
               <Card sx={{ ...mobileCardSx, display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <CardContent sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    justifyContent="space-between"
-                    spacing={1.5}
-                    sx={{ mb: 2 }}
-                  >
-                    <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Rating trend
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Rating with confidence band
-                      </Typography>
-                    </Box>
-                    <ToggleButtonGroup
-                      value={timeRange}
-                      exclusive
-                      onChange={(event, newValue) => newValue && setTimeRange(newValue)}
-                      size="small"
-                      aria-label="Select time range"
-                    >
-                      <ToggleButton value="3m">3M</ToggleButton>
-                      <ToggleButton value="6m">6M</ToggleButton>
-                      <ToggleButton value="12m">12M</ToggleButton>
-                      <ToggleButton value="all">All</ToggleButton>
-                    </ToggleButtonGroup>
-                  </Stack>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      Rating trend
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {timeRange === 'all'
+                        ? 'All time'
+                        : `Last ${timeRange.replace('m', ' months')}`}
+                      {' · '}
+                      {trendPoints.length} events
+                    </Typography>
+                  </Box>
                   <Box sx={{ flex: 1, minHeight: isMobile ? 200 : 240 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={trendPoints}>
@@ -836,6 +840,32 @@ export function Home() {
           </Grid>
         </Grid>
       </Box>
+
+      {/* Sync snackbar */}
+      <Snackbar
+        open={syncing}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: isMobile ? 'center' : 'right',
+        }}
+      >
+        <Alert severity="info" icon={<CircularProgress size={18} />} variant="filled">
+          Syncing player data…
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={!syncing && (!!lastSyncMessage || !!syncErr)}
+        autoHideDuration={4000}
+        onClose={clearSyncMessage}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: isMobile ? 'center' : 'right',
+        }}
+      >
+        <Alert severity={syncErr ? 'error' : 'success'} variant="filled" onClose={clearSyncMessage}>
+          {syncErr ?? lastSyncMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

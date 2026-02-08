@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -6,7 +7,7 @@ import {
   Chip,
   CircularProgress,
   Container,
-  LinearProgress,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -37,6 +38,13 @@ export function ClubLeaderboard() {
   const [cursor, setCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+
+  const clearSyncNotification = () => {
+    setSyncMessage(null);
+    setSyncError(null);
+  };
 
   const loadLeaderboard = async () => {
     const data = await api.getClubLeaderboard(DEFAULT_CLUB_ID);
@@ -62,11 +70,14 @@ export function ClubLeaderboard() {
 
   const handleSyncClub = async () => {
     setSyncing(true);
+    setSyncMessage(null);
+    setSyncError(null);
     try {
       await api.syncClub(DEFAULT_CLUB_ID, 'Penicuik Table Tennis Club');
       await loadLeaderboard();
+      setSyncMessage('Club data synced successfully');
     } catch {
-      // silently fail — data stays as-is
+      setSyncError('Club sync failed. Please try again.');
     } finally {
       setSyncing(false);
     }
@@ -107,7 +118,13 @@ export function ClubLeaderboard() {
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       {/* Header */}
-      <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 3 }}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        alignItems={{ xs: 'flex-start', md: 'center' }}
+        justifyContent="space-between"
+        spacing={2}
+        sx={{ mb: 3 }}
+      >
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
             Club Leaderboard
@@ -118,26 +135,17 @@ export function ClubLeaderboard() {
         </Box>
         <Button
           variant="contained"
-          startIcon={syncing ? <CircularProgress size={18} color="inherit" /> : <RefreshIcon />}
+          size="small"
+          startIcon={<RefreshIcon />}
           onClick={handleSyncClub}
-          disabled={syncing}
+          sx={{ whiteSpace: 'nowrap', display: { xs: 'none', md: 'inline-flex' } }}
         >
-          {syncing ? 'Syncing…' : 'Sync club'}
+          Sync club data
         </Button>
       </Stack>
 
-      {syncing && <LinearProgress sx={{ mb: 2 }} />}
-
       {/* Controls */}
-      <Box
-        sx={{
-          mb: 3,
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-          alignItems: { xs: 'stretch', sm: 'center' },
-        }}
-      >
+      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
         <TextField
           size="small"
           placeholder="Search players"
@@ -145,7 +153,16 @@ export function ClubLeaderboard() {
           onChange={(event) => setSearch(event.target.value)}
           sx={{ maxWidth: 280 }}
         />
-      </Box>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<RefreshIcon />}
+          onClick={handleSyncClub}
+          sx={{ whiteSpace: 'nowrap', display: { xs: 'inline-flex', md: 'none' } }}
+        >
+          Sync club data
+        </Button>
+      </Stack>
 
       {/* Leaderboard */}
       {isMobile ? (
@@ -240,6 +257,36 @@ export function ClubLeaderboard() {
           </Button>
         </Box>
       )}
+
+      {/* Sync snackbar */}
+      <Snackbar
+        open={syncing}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: isMobile ? 'center' : 'right',
+        }}
+      >
+        <Alert severity="info" icon={<CircularProgress size={18} />} variant="filled">
+          Syncing club data…
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={!syncing && (!!syncMessage || !!syncError)}
+        autoHideDuration={4000}
+        onClose={clearSyncNotification}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: isMobile ? 'center' : 'right',
+        }}
+      >
+        <Alert
+          severity={syncError ? 'error' : 'success'}
+          variant="filled"
+          onClose={clearSyncNotification}
+        >
+          {syncError ?? syncMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

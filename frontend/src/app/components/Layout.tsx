@@ -15,7 +15,6 @@ import {
   Menu,
   MenuItem,
   ListItemText,
-  CircularProgress,
   LinearProgress,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
@@ -25,7 +24,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import { TableTennisIcon } from './TableTennisIcon';
 import { useContext, useMemo, useState } from 'react';
 import { ColorModeContext } from '../theme/ColorModeContext';
 import { RiveLogo } from './RiveLogo';
@@ -216,21 +215,25 @@ export function Layout() {
                   onClick={() => navigate('/ping-pong')}
                   aria-label="Go to Ping Pong Zone"
                 >
-                  <SportsBaseballIcon />
+                  <TableTennisIcon />
                 </IconButton>
               </Tooltip>
             </Stack>
           )}
           {isMobile && (
-            <Tooltip title="Sync data">
+            <Tooltip
+              title="Sync player data"
+              enterTouchDelay={0}
+              leaveTouchDelay={2000}
+              placement="bottom"
+            >
               <span>
                 <IconButton
                   onClick={handleSyncMenuOpen}
                   color="inherit"
-                  disabled={syncing}
-                  aria-label="Sync data"
+                  aria-label="Sync player data"
                 >
-                  {syncing ? <CircularProgress size={22} color="inherit" /> : <RefreshIcon />}
+                  <RefreshIcon />
                 </IconButton>
               </span>
             </Tooltip>
@@ -292,7 +295,7 @@ export function Layout() {
             <BottomNavigationAction label="Home" icon={<HomeIcon />} />
             <BottomNavigationAction label="History" icon={<HistoryIcon />} />
             <BottomNavigationAction label="Club" icon={<GroupsIcon />} />
-            <BottomNavigationAction label="Ping Pong" icon={<SportsBaseballIcon />} />
+            <BottomNavigationAction label="Ping Pong" icon={<TableTennisIcon />} />
           </BottomNavigation>
         </Paper>
       )}
