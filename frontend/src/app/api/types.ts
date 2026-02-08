@@ -112,3 +112,27 @@ export interface ClubLeaderboard {
   nextCursor: string | null;
   hasMore: boolean;
 }
+
+export interface ClubListItem {
+  id: number;
+  name: string;
+}
+
+export interface ClubMemberSearchResult {
+  playerId: number;
+  name: string;
+  rating: number | null;
+  rank: number | null;
+}
+
+export interface ClubListItem {
+  id: number;
+  name: string;
+}
+
+export interface ClubMemberSearchResult {
+  playerId: number;
+  name: string;
+  rating: number | null;
+  rank: number | null;
+}

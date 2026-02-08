@@ -96,12 +96,33 @@ export function Layout() {
         }}
       >
         <Toolbar sx={{ gap: 2, minHeight: { xs: 64, md: 72 } }}>
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexGrow: 1 }}>
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            onClick={() => navigate('/')}
+            role="link"
+            aria-label="Go to player search"
+            className="smash-logo"
+            sx={{
+              flexGrow: 1,
+              cursor: 'pointer',
+              borderRadius: 2,
+              px: 1,
+              mx: -1,
+              transition: 'opacity 180ms ease',
+              '&:hover': { opacity: 0.85 },
+              '&:hover .smash-subtitle': {
+                letterSpacing: '0.12em',
+              },
+            }}
+          >
             <RiveLogo src="/table_tennis.riv" size={56} />
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>
                 <Box
                   component="span"
+                  className="smash-title"
                   sx={{
                     display: 'inline-flex',
                     flexWrap: 'wrap',
@@ -109,18 +130,31 @@ export function Layout() {
                       '0%': { opacity: 0, transform: 'translateY(6px)' },
                       '100%': { opacity: 1, transform: 'translateY(0)' },
                     },
+                    '@keyframes letterPop': {
+                      '0%': { transform: 'translateY(0) scale(1)' },
+                      '40%': { transform: 'translateY(-3px) scale(1.12)' },
+                      '100%': { transform: 'translateY(0) scale(1)' },
+                    },
                   }}
                 >
                   {titleChars.map((char, index) => (
                     <Box
                       key={`${char}-${index}`}
                       component="span"
+                      className="smash-char"
                       sx={{
                         display: 'inline-block',
                         whiteSpace: 'pre',
                         animation: reduceMotion ? 'none' : 'titleIn 520ms ease-out forwards',
                         animationDelay: reduceMotion ? '0ms' : `${index * 22}ms`,
                         opacity: reduceMotion ? 1 : 0,
+                        transition: 'color 250ms ease',
+                        '.smash-logo:hover &': reduceMotion
+                          ? {}
+                          : {
+                              animation: `titleIn 520ms ease-out forwards, letterPop 400ms ease ${index * 45}ms`,
+                              color: 'primary.main',
+                            },
                       }}
                     >
                       {char}
@@ -132,20 +166,14 @@ export function Layout() {
                 <Typography
                   variant="caption"
                   color="text.secondary"
+                  className="smash-subtitle"
                   sx={{
                     display: 'inline-block',
                     fontSize: { xs: '0.85rem', md: '0.95rem' },
                     fontWeight: 600,
                     letterSpacing: '0.06em',
                     textTransform: 'uppercase',
-                    '@keyframes subtitleHover': {
-                      '0%': { transform: 'translateY(0)', opacity: 1 },
-                      '50%': { transform: 'translateY(-2px)', opacity: 0.85 },
-                      '100%': { transform: 'translateY(0)', opacity: 1 },
-                    },
-                    '&:hover': {
-                      animation: 'subtitleHover 420ms ease-in-out',
-                    },
+                    transition: reduceMotion ? 'none' : 'letter-spacing 350ms ease',
                   }}
                 >
                   Player ratings

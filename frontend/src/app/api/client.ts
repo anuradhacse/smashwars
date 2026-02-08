@@ -1,5 +1,7 @@
 import type {
   ClubLeaderboard,
+  ClubListItem,
+  ClubMemberSearchResult,
   EventDetailsForPlayer,
   PlayerHistory,
   PlayerOverview,
@@ -101,6 +103,19 @@ export const api = {
     const cursorParam = cursor ? `&cursor=${encodeURIComponent(cursor)}` : '';
     return getJson<ClubLeaderboard>(
       `${API_BASE_URL}/clubs/${clubId}/leaderboard?limit=${limit}${cursorParam}`,
+    );
+  },
+
+  async getClubs(): Promise<{ items: ClubListItem[] }> {
+    return getJson<{ items: ClubListItem[] }>(`${API_BASE_URL}/clubs`);
+  },
+
+  async searchClubMembers(
+    clubId: number,
+    query: string,
+  ): Promise<{ items: ClubMemberSearchResult[] }> {
+    return getJson<{ items: ClubMemberSearchResult[] }>(
+      `${API_BASE_URL}/clubs/${clubId}/members/search?q=${encodeURIComponent(query)}`,
     );
   },
 

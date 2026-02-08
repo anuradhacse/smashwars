@@ -21,6 +21,47 @@ const decodeRankCursor = (cursor?: string): RankCursor | null => {
 
 @Controller('v1/clubs')
 export class ClubsController {
+  @Get()
+  async listClubs() {
+    const clubs = await prisma.club.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+    return { items: clubs };
+  }
+
+  @Get(':clubId/members/search')
+  async searchMembers(
+    @Param('clubId') clubId: string,
+    @Query('q') q = '',
+  ) {
+    if (q.trim().length < 1) {
+      return { items: [] };
+    }
+    const members = await prisma.clubMember.findMany({
+      where: {
+        clubId: Number(clubId),
+        displayName: { contains: q.trim(), mode: 'insensitive' },
+      },
+      orderBy: { rank: 'asc' },
+      take: 20,
+      select: {
+        playerId: true,
+        displayName: true,
+        ratingMean: true,
+        rank: true,
+      },
+    });
+    return {
+      items: members.map((m) => ({
+        playerId: m.playerId,
+        name: m.displayName,
+        rating: m.ratingMean,
+        rank: m.rank,
+      })),
+    };
+  }
+
   @Get(':clubId/leaderboard')
   async getLeaderboard(
     @Param('clubId') clubId: string,
@@ -67,4 +108,5 @@ export class ClubsController {
       hasMore,
     };
   }
+
 }
