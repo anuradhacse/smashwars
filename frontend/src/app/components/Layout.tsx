@@ -25,6 +25,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import { useContext, useMemo, useState } from 'react';
 import { ColorModeContext } from '../theme/ColorModeContext';
 import { RiveLogo } from './RiveLogo';
@@ -76,6 +77,7 @@ export function Layout() {
     if (location.pathname === '/') return 0;
     if (location.pathname.includes('/history') || location.pathname.includes('/event')) return 1;
     if (location.pathname.includes('/club')) return 2;
+    if (location.pathname.includes('/ping-pong')) return 3;
     return 0;
   };
 
@@ -180,6 +182,15 @@ export function Layout() {
                   <GroupsIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title="Ping Pong Zone">
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate('/ping-pong')}
+                  aria-label="Go to Ping Pong Zone"
+                >
+                  <SportsBaseballIcon />
+                </IconButton>
+              </Tooltip>
             </Stack>
           )}
           {isMobile && (
@@ -246,12 +257,14 @@ export function Layout() {
               if (newValue === 0) navigate(`/players/${playerId}`);
               if (newValue === 1) navigate(`/players/${playerId}/history`);
               if (newValue === 2) navigate(`/players/${playerId}/club`);
+              if (newValue === 3) navigate('/ping-pong');
             }}
             showLabels
           >
             <BottomNavigationAction label="Home" icon={<HomeIcon />} />
             <BottomNavigationAction label="History" icon={<HistoryIcon />} />
             <BottomNavigationAction label="Club" icon={<GroupsIcon />} />
+            <BottomNavigationAction label="Ping Pong" icon={<SportsBaseballIcon />} />
           </BottomNavigation>
         </Paper>
       )}

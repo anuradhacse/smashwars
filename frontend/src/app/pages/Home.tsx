@@ -343,23 +343,36 @@ export function Home() {
         </Grid>
 
         {/* Key Metrics — Row 1 */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: { xs: 1.5, sm: 2 } }}>
           {/* Rating */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Rating
                   </Typography>
                   <InfoTooltip title="Your skill level as a number. The range shows where your true rating likely falls." />
                 </Stack>
                 {overview.current ? (
                   <>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+                    >
                       {overview.current.mean}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                    >
                       True rating between {overview.current.mean - overview.current.stdev}–
                       {overview.current.mean + overview.current.stdev}
                     </Typography>
@@ -374,24 +387,37 @@ export function Home() {
           </Grid>
 
           {/* Win Rate */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Win Rate
                   </Typography>
                   <InfoTooltip title="Your win percentage from all matches in the selected time range." />
                 </Stack>
                 {overview.insights.winRate ? (
                   <>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+                    >
                       {Math.round(
                         (overview.insights.winRate.wins / overview.insights.winRate.total) * 100,
                       )}
                       %
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                    >
                       {overview.insights.winRate.wins}W – {overview.insights.winRate.losses}L (
                       {overview.insights.winRate.total} matches)
                     </Typography>
@@ -406,11 +432,17 @@ export function Home() {
           </Grid>
 
           {/* Recent Form */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Recent Form
                   </Typography>
                   <InfoTooltip title="Total rating points gained or lost across your last 5 events. Positive means you're on an upswing." />
@@ -420,6 +452,7 @@ export function Home() {
                   sx={{
                     fontWeight: 700,
                     mb: 0.5,
+                    fontSize: { xs: '1.5rem', sm: '2.125rem' },
                     color: overview.insights.momentumLast5
                       ? overview.insights.momentumLast5 > 0
                         ? 'success.main'
@@ -433,7 +466,11 @@ export function Home() {
                     ? `${overview.insights.momentumLast5 > 0 ? '+' : ''}${overview.insights.momentumLast5}`
                     : '0'}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                >
                   {overview.insights.momentumLast5
                     ? overview.insights.momentumLast5 > 0
                       ? 'Points gained in last 5 events'
@@ -445,18 +482,23 @@ export function Home() {
           </Grid>
 
           {/* Last Played */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
                 <Typography
                   variant="overline"
                   color="text.secondary"
-                  sx={{ display: 'block', mb: 1 }}
+                  sx={{ display: 'block', mb: 0.5, fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
                 >
                   Last played
                 </Typography>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
-                  <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+                  >
                     {overview.lastPlayedDate
                       ? format(new Date(overview.lastPlayedDate), 'MMM dd')
                       : '—'}
@@ -470,7 +512,11 @@ export function Home() {
                     />
                   )}
                 </Stack>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                >
                   Activity recency
                 </Typography>
               </CardContent>
@@ -479,22 +525,31 @@ export function Home() {
         </Grid>
 
         {/* Key Metrics — Row 2 */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }} sx={{ mb: 3 }}>
           {/* Events Played */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
                 <Typography
                   variant="overline"
                   color="text.secondary"
-                  sx={{ display: 'block', mb: 1 }}
+                  sx={{ display: 'block', mb: 0.5, fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
                 >
                   Events Played
                 </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+                >
                   {overview.insights.eventsPlayed ?? 0}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                >
                   In selected time range
                 </Typography>
               </CardContent>
@@ -502,19 +557,33 @@ export function Home() {
           </Grid>
 
           {/* Upset Wins */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Upset Wins
                   </Typography>
                   <InfoTooltip title="Wins against opponents rated higher than you. Shows your best scalp — the highest-rated opponent you beat." />
                 </Stack>
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
+                >
                   {overview.insights.upsetWins?.count ?? 0}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  noWrap
+                  sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                >
                   {overview.insights.upsetWins?.best
                     ? `Best: ${overview.insights.upsetWins.best.opponentName ?? 'Unknown'} (${overview.insights.upsetWins.best.opponentRating})`
                     : 'No upsets in this range'}
@@ -524,26 +593,44 @@ export function Home() {
           </Grid>
 
           {/* Toughest Loss */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Toughest Loss
                   </Typography>
                   <InfoTooltip title="The lowest-rated opponent who beat you in the selected time range." />
                 </Stack>
                 {overview.insights.toughestLoss ? (
                   <>
-                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }} noWrap>
+                    <Typography
+                      variant="h5"
+                      sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                      noWrap
+                    >
                       {overview.insights.toughestLoss.opponentName ?? 'Unknown'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                    >
                       Rated {overview.insights.toughestLoss.opponentRating}
                     </Typography>
                   </>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                  >
                     No losses in this range
                   </Typography>
                 )}
@@ -552,11 +639,17 @@ export function Home() {
           </Grid>
 
           {/* Current Streak */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid size={{ xs: 6, sm: 6, md: 3 }}>
             <Card variant="outlined" sx={{ height: '100%', ...mobileCardSx }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="overline" color="text.secondary">
+              <CardContent
+                sx={{ p: { xs: 1.5, sm: 2 }, '&:last-child': { pb: { xs: 1.5, sm: 2 } } }}
+              >
+                <Stack direction="row" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+                  >
                     Current Streak
                   </Typography>
                   <InfoTooltip title="Consecutive events where you gained or lost rating points." />
@@ -568,6 +661,7 @@ export function Home() {
                       sx={{
                         fontWeight: 700,
                         mb: 0.5,
+                        fontSize: { xs: '1.5rem', sm: '2.125rem' },
                         color:
                           overview.insights.currentStreak.direction === 'W'
                             ? 'success.main'
@@ -577,7 +671,11 @@ export function Home() {
                       {overview.insights.currentStreak.count}{' '}
                       {overview.insights.currentStreak.direction === 'W' ? 'W' : 'L'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
+                    >
                       {overview.insights.currentStreak.direction === 'W'
                         ? `Gained points in last ${overview.insights.currentStreak.count} events`
                         : `Lost points in last ${overview.insights.currentStreak.count} events`}
