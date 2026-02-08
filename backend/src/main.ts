@@ -11,15 +11,15 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.use(helmet());
-  app.useBodyParser('json', { limit: '500kb' });
-
   app.enableCors({
     origin: ALLOWED_ORIGINS,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'x-api-key'],
     credentials: true,
   });
+
+  app.use(helmet());
+  app.useBodyParser('json', { limit: '500kb' });
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);
