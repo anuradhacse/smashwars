@@ -6,7 +6,7 @@ import { AppModule } from './modules/app.module.js';
 
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
   .split(',')
-  .map((o) => o.trim());
+  .map((o: string) => o.trim());
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
