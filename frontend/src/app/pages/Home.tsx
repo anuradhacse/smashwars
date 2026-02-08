@@ -69,6 +69,22 @@ export function Home() {
   const { syncing, triggerSync } = useSync();
   const [syncMenuAnchor, setSyncMenuAnchor] = useState<null | HTMLElement>(null);
 
+  // Load avatar from DB on mount
+  useEffect(() => {
+    let active = true;
+    api
+      .getAvatar(playerId)
+      .then((res) => {
+        if (active && res.avatarUrl) {
+          setProfilePhotoUrl(res.avatarUrl);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [playerId]);
+
   const handleSync = async (rangeValue: 12 | 24 | 'all') => {
     await triggerSync(playerId, rangeValue);
   };
@@ -119,14 +135,6 @@ export function Home() {
       active = false;
     };
   }, [timeRange, playerId, syncing]);
-
-  useEffect(() => {
-    return () => {
-      if (profilePhotoUrl) {
-        URL.revokeObjectURL(profilePhotoUrl);
-      }
-    };
-  }, [profilePhotoUrl]);
 
   const trendPoints = useMemo(() => overview?.trend.points ?? [], [overview]);
 
@@ -219,32 +227,47 @@ export function Home() {
                   onChange={(event) => {
                     const file = event.target.files?.[0];
                     if (!file) return;
-                    setProfilePhotoUrl(URL.createObjectURL(file));
+                    event.target.value = '';
+                    const img = new Image();
+                    img.onload = () => {
+                      const size = 256;
+                      const canvas = document.createElement('canvas');
+                      canvas.width = size;
+                      canvas.height = size;
+                      const ctx = canvas.getContext('2d')!;
+                      // Crop to square from center
+                      const min = Math.min(img.width, img.height);
+                      const sx = (img.width - min) / 2;
+                      const sy = (img.height - min) / 2;
+                      ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+                      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                      setProfilePhotoUrl(dataUrl);
+                      api.updateAvatar(playerId, dataUrl).catch(() => {});
+                    };
+                    img.src = URL.createObjectURL(file);
                   }}
                 />
                 <Badge
                   overlap="circular"
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                   badgeContent={
-                    !profilePhotoUrl ? (
-                      <IconButton
-                        size="small"
-                        component="label"
-                        htmlFor="profile-photo-upload"
-                        sx={{
-                          width: { xs: 24, md: 28 },
-                          height: { xs: 24, md: 28 },
-                          bgcolor: 'background.paper',
-                          border: '1px solid',
-                          borderColor: 'divider',
-                          boxShadow: 1,
-                          '&:hover': { bgcolor: 'action.hover' },
-                        }}
-                        aria-label="Upload profile photo"
-                      >
-                        <CameraAltIcon sx={{ fontSize: { xs: 16, md: 18 } }} />
-                      </IconButton>
-                    ) : null
+                    <IconButton
+                      size="small"
+                      component="label"
+                      htmlFor="profile-photo-upload"
+                      sx={{
+                        width: { xs: 24, md: 28 },
+                        height: { xs: 24, md: 28 },
+                        bgcolor: 'background.paper',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        boxShadow: 1,
+                        '&:hover': { bgcolor: 'action.hover' },
+                      }}
+                      aria-label="Upload profile photo"
+                    >
+                      <CameraAltIcon sx={{ fontSize: { xs: 16, md: 18 } }} />
+                    </IconButton>
                   }
                 >
                   <Avatar

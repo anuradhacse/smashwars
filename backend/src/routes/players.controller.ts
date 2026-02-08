@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Put, Query } from '@nestjs/common';
 
 import { PlayersService } from '../services/players.service.js';
 import { parseRange } from '../utils/api/range.js';
@@ -40,5 +40,20 @@ export class PlayersController {
       safeLimit,
       cursor
     );
+  }
+
+  @Get(':playerId/avatar')
+  async getAvatar(@Param('playerId') playerId: string) {
+    const avatarUrl = await this.playersService.getAvatar(Number(playerId));
+    return { avatarUrl };
+  }
+
+  @Put(':playerId/avatar')
+  async updateAvatar(
+    @Param('playerId') playerId: string,
+    @Body('avatarUrl') avatarUrl: string
+  ) {
+    await this.playersService.updateAvatar(Number(playerId), avatarUrl);
+    return { status: 'ok' };
   }
 }

@@ -24,6 +24,7 @@ model Player {
   id            Int           @id
   displayName   String
   clubId        Int?
+  avatarUrl     String?
   lastSyncedAt  DateTime?
   syncStatus    SyncStatus    @default(stale)
   syncError     String?

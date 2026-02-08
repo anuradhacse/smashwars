@@ -230,4 +230,20 @@ export class PlayersService {
       hasMore,
     };
   }
+
+  async getAvatar(playerId: number): Promise<string | null> {
+    const player = await prisma.player.findUnique({
+      where: { id: playerId },
+      select: { avatarUrl: true },
+    });
+    return player?.avatarUrl ?? null;
+  }
+
+  async updateAvatar(playerId: number, avatarUrl: string): Promise<void> {
+    await prisma.player.update({
+      where: { id: playerId },
+      data: { avatarUrl },
+    });
+  }
+
 }

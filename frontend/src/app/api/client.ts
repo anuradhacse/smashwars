@@ -43,6 +43,21 @@ async function postJson<T>(url: string, body?: unknown): Promise<T> {
   return (await res.json()) as T;
 }
 
+async function putJson<T>(url: string, body?: unknown): Promise<T> {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(API_KEY ? { 'x-api-key': API_KEY } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    throw new ApiError(`Request failed: ${res.status}`, res.status);
+  }
+  return (await res.json()) as T;
+}
+
 export const api = {
   async getPlayerOverview(
     playerId: number,
@@ -100,6 +115,16 @@ export const api = {
     return postJson<{ status: string; message: string }>(`${API_BASE_URL}/sync/club/${clubId}`, {
       clubName,
       syncPlayers: false,
+    });
+  },
+
+  async getAvatar(playerId: number): Promise<{ avatarUrl: string | null }> {
+    return getJson<{ avatarUrl: string | null }>(`${API_BASE_URL}/players/${playerId}/avatar`);
+  },
+
+  async updateAvatar(playerId: number, avatarUrl: string): Promise<{ status: string }> {
+    return putJson<{ status: string }>(`${API_BASE_URL}/players/${playerId}/avatar`, {
+      avatarUrl,
     });
   },
 };
