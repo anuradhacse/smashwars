@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 import { ApiKeyGuard } from '../auth/api-key.guard.js';
 import { ClubsController } from '../routes/clubs.controller.js';
@@ -11,7 +12,12 @@ import { InsightsService } from '../services/insights.service.js';
 import { PlayersService } from '../services/players.service.js';
 
 @Module({
-  imports: [],
+  imports: [
+    ThrottlerModule.forRoot([{
+      ttl: 60_000,
+      limit: 60,
+    }]),
+  ],
   controllers: [
     HealthController,
     PlayersController,
@@ -25,6 +31,10 @@ import { PlayersService } from '../services/players.service.js';
     {
       provide: APP_GUARD,
       useClass: ApiKeyGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

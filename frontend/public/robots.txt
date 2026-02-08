@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://smashwars.vercel.app/sitemap.xml
