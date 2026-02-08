@@ -11,7 +11,6 @@ import {
   ListItemText,
   Skeleton,
   Typography,
-  useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -30,7 +29,7 @@ type ParsedSetScore = {
 
 const parseScoreToken = (token: string): ParsedSetScore | null => {
   if (!token) return null;
-  if (/^\d+\-\d+$/.test(token)) {
+  if (/^\d+-\d+$/.test(token)) {
     const [playerScoreRaw, opponentScoreRaw] = token.split('-').map((value) => Number(value));
     if (!Number.isFinite(playerScoreRaw) || !Number.isFinite(opponentScoreRaw)) return null;
     return { playerScore: playerScoreRaw, opponentScore: opponentScoreRaw };
@@ -55,7 +54,6 @@ const parseSetScores = (score: string): ParsedSetScore[] =>
     .filter((setScore): setScore is ParsedSetScore => Boolean(setScore));
 
 export function EventDetails() {
-  const theme = useTheme();
   const navigate = useNavigate();
   const { eventId, playerId: playerIdParam } = useParams();
   const playerId = Number(playerIdParam ?? DEFAULT_PLAYER_ID);
@@ -89,7 +87,7 @@ export function EventDetails() {
     return () => {
       active = false;
     };
-  }, [eventId]);
+  }, [eventId, playerId]);
 
   if (loading) {
     return (
@@ -116,7 +114,11 @@ export function EventDetails() {
             <Typography color="text.secondary" sx={{ mb: 2 }}>
               {error ?? 'Please try again later.'}
             </Typography>
-            <Chip label="Back to dashboard" onClick={() => navigate('/')} sx={{ cursor: 'pointer' }} />
+            <Chip
+              label="Back to dashboard"
+              onClick={() => navigate('/')}
+              sx={{ cursor: 'pointer' }}
+            />
           </CardContent>
         </Card>
       </Container>
@@ -127,13 +129,13 @@ export function EventDetails() {
     <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <IconButton
-            onClick={() => navigate(`/players/${playerId}`)}
-            sx={{ mr: 2 }}
-            aria-label="Back to dashboard"
-          >
-            <ArrowBackIcon />
-          </IconButton>
+        <IconButton
+          onClick={() => navigate(`/players/${playerId}`)}
+          sx={{ mr: 2 }}
+          aria-label="Back to dashboard"
+        >
+          <ArrowBackIcon />
+        </IconButton>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             {details.event.name}
@@ -222,127 +224,101 @@ export function EventDetails() {
       <Card>
         <CardContent>
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-            Match Breakdown
+            Match breakdown
           </Typography>
           <List sx={{ p: 0 }}>
-            {details.matches.map((match, index) => (
-              <Box key={`${match.opponent.playerId}-${index}`}>
-                <ListItem sx={{ px: 0, py: 2 }}>
-                  <ListItemText
-                    primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          {match.opponent.name ?? `Player ${match.opponent.playerId}`}
-                        </Typography>
-                        <Chip
-                          label={match.result}
-                          color={match.result === 'W' ? 'success' : 'warning'}
-                          size="small"
-                          sx={{ fontWeight: 600 }}
-                        />
-                      </Box>
-                    }
-                    secondary={
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 0.5 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Opponent: {match.opponentRating.mean} ±{match.opponentRating.stdev}
-                          </Typography>
-                        <Typography
-                          variant="body2"
+            {details.matches.map((match, index) => {
+              const sets = parseSetScores(match.score);
+              const setsWon = sets.filter((s) => s.playerScore > s.opponentScore).length;
+              const setsLost = sets.filter((s) => s.playerScore < s.opponentScore).length;
+
+              return (
+                <Box key={`${match.opponent.playerId}-${index}`}>
+                  <ListItem sx={{ px: 0, py: 2 }}>
+                    <ListItemText
+                      primary={
+                        <Box
                           sx={{
-                            fontWeight: 700,
-                            color: match.delta >= 0 ? 'success.main' : 'warning.main',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            mb: 0.5,
+                            gap: 1,
                           }}
                         >
-                            {match.delta > 0 ? '+' : ''}{match.delta} rating
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Set scores
-                          </Typography>
-                          {parseSetScores(match.score).map((setScore, setIndex) => {
-                            const isSetWin = setScore.playerScore > setScore.opponentScore;
-                            const isSetLoss = setScore.playerScore < setScore.opponentScore;
-                            const chipColor = isSetWin ? 'success' : isSetLoss ? 'warning' : 'default';
-
-                            return (
-                              <Chip
-                                key={`${match.opponent.playerId}-${setIndex}`}
-                                label={
-                                  <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
-                                    <Box
-                                      component="span"
-                                      sx={{
-                                        width: 22,
-                                        height: 22,
-                                        borderRadius: '50%',
-                                        bgcolor:
-                                          chipColor === 'success'
-                                            ? theme.palette.success.main
-                                            : chipColor === 'warning'
-                                              ? theme.palette.warning.main
-                                              : theme.palette.action.selected,
-                                        color:
-                                          chipColor === 'success'
-                                            ? theme.palette.success.contrastText
-                                            : chipColor === 'warning'
-                                              ? theme.palette.warning.contrastText
-                                              : theme.palette.text.primary,
-                                        fontWeight: 800,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        border: '1px solid',
-                                        borderColor:
-                                          chipColor === 'success'
-                                            ? theme.palette.success.dark
-                                            : chipColor === 'warning'
-                                              ? theme.palette.warning.dark
-                                              : theme.palette.divider,
-                                      }}
-                                    >
-                                      {setScore.playerScore}
-                                    </Box>
-                                    <Box component="span" sx={{ fontWeight: 700 }}>
-                                      –
-                                    </Box>
-                                    <Box
-                                      component="span"
-                                      sx={{
-                                        px: 0.6,
-                                        py: 0.1,
-                                        borderRadius: 0.8,
-                                        fontWeight: 600,
-                                        minWidth: 18,
-                                        textAlign: 'center',
-                                        color: 'text.secondary',
-                                      }}
-                                    >
-                                      {setScore.opponentScore}
-                                    </Box>
-                                  </Box>
-                                }
-                                size="small"
-                                color={chipColor === 'default' ? undefined : chipColor}
-                                variant={chipColor === 'default' ? 'outlined' : 'filled'}
+                          <Typography variant="body1" noWrap sx={{ fontWeight: 600, minWidth: 0 }}>
+                            {match.result === 'W' ? 'Won vs' : 'Lost to'}{' '}
+                            {match.opponent.name ?? `Player ${match.opponent.playerId}`}
+                            {sets.length > 0 && (
+                              <Box
+                                component="span"
                                 sx={{
-                                  fontWeight: 600,
-                                  borderColor: 'divider',
-                                  bgcolor: chipColor === 'default' ? 'action.hover' : undefined,
+                                  color: 'text.secondary',
+                                  fontWeight: 400,
+                                  fontSize: '0.875rem',
                                 }}
-                              />
-                            );
-                          })}
+                              >
+                                {' '}
+                                ({setsWon}–{setsLost})
+                              </Box>
+                            )}
+                          </Typography>
+                          <Chip
+                            label={`${match.delta > 0 ? '+' : ''}${match.delta} pts`}
+                            color={match.result === 'W' ? 'success' : 'warning'}
+                            size="small"
+                            sx={{ fontWeight: 700, flexShrink: 0 }}
+                          />
                         </Box>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-                {index < details.matches.length - 1 && <Divider />}
-              </Box>
-            ))}
+                      }
+                      secondary={
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 0.5 }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Opponent rating: {match.opponentRating.mean} ±
+                            {match.opponentRating.stdev}
+                          </Typography>
+                          {sets.length > 0 && (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                flexWrap: 'wrap',
+                              }}
+                            >
+                              <Typography variant="caption" color="text.secondary">
+                                Sets
+                              </Typography>
+                              {sets.map((setScore, setIndex) => {
+                                const isSetWin = setScore.playerScore > setScore.opponentScore;
+                                const isSetLoss = setScore.playerScore < setScore.opponentScore;
+                                const chipColor = isSetWin
+                                  ? 'success'
+                                  : isSetLoss
+                                    ? 'warning'
+                                    : 'default';
+
+                                return (
+                                  <Chip
+                                    key={`${match.opponent.playerId}-${setIndex}`}
+                                    label={`${setScore.playerScore} – ${setScore.opponentScore}`}
+                                    size="small"
+                                    color={chipColor === 'default' ? undefined : chipColor}
+                                    variant={chipColor === 'default' ? 'outlined' : 'filled'}
+                                    sx={{ fontWeight: 600 }}
+                                  />
+                                );
+                              })}
+                            </Box>
+                          )}
+                        </Box>
+                      }
+                    />
+                  </ListItem>
+                  {index < details.matches.length - 1 && <Divider />}
+                </Box>
+              );
+            })}
           </List>
         </CardContent>
       </Card>

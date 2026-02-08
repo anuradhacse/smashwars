@@ -171,18 +171,6 @@ export function PlayerLanding() {
           </Stack>
         </CardContent>
       </Card>
-
-      <Box sx={{ mt: 3, textAlign: 'center' }}>
-        <Button
-          size="small"
-          onClick={() => {
-            const last = localStorage.getItem('lastPlayerId');
-            if (last) navigate(`/players/${last}`);
-          }}
-        >
-          Open last player
-        </Button>
-      </Box>
     </Container>
   );
 }

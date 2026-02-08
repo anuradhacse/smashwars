@@ -140,7 +140,10 @@ export function History() {
     <Container maxWidth={false} disableGutters sx={{ py: { xs: 2, md: 4 } }}>
       <Box sx={{ maxWidth: 960, mx: 'auto', width: '100%', px: { xs: 2, md: 3 } }}>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
-          <IconButton onClick={() => navigate(`/players/${playerId}`)} aria-label="Back to dashboard">
+          <IconButton
+            onClick={() => navigate(`/players/${playerId}`)}
+            aria-label="Back to dashboard"
+          >
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
@@ -226,22 +229,32 @@ export function History() {
             </Typography>
             <List sx={{ p: 0 }}>
               {history.items.map((event, index) => (
-                <ListItem key={event.eventId} disablePadding divider={index < history.items.length - 1}>
-                <ListItemButton onClick={() => navigate(`/players/${playerId}/event/${event.eventId}`)}>
+                <ListItem
+                  key={event.eventId}
+                  disablePadding
+                  divider={index < history.items.length - 1}
+                >
+                  <ListItemButton
+                    onClick={() => navigate(`/players/${playerId}/event/${event.eventId}`)}
+                    sx={{ gap: 2 }}
+                  >
                     <ListItemText
                       primary={event.eventName}
                       secondary={format(new Date(event.eventDate), 'MMM dd, yyyy')}
                       primaryTypographyProps={{ fontWeight: 600 }}
+                      sx={{ minWidth: 0 }}
                     />
-                    <Stack alignItems="flex-end">
-                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    <Stack alignItems="flex-end" sx={{ flexShrink: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }} noWrap>
                         {event.final.mean} ±{event.final.stdev}
                       </Typography>
                       <Typography
                         variant="caption"
                         color={event.pointChange >= 0 ? 'success.main' : 'error.main'}
+                        sx={{ fontWeight: 600 }}
                       >
-                        {event.pointChange > 0 ? '+' : ''}{event.pointChange}
+                        {event.pointChange > 0 ? '+' : ''}
+                        {event.pointChange}
                       </Typography>
                     </Stack>
                   </ListItemButton>

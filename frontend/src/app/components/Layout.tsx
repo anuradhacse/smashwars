@@ -118,7 +118,10 @@ export function Layout() {
           >
             <RiveLogo src="/table_tennis.riv" size={56} />
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 0, lineHeight: 1.2 }}
+              >
                 <Box
                   component="span"
                   className="smash-title"
@@ -161,23 +164,21 @@ export function Layout() {
                   ))}
                 </Box>
               </Typography>
-              {!isMobile && (
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  className="smash-subtitle"
-                  sx={{
-                    display: 'inline-block',
-                    fontSize: { xs: '0.85rem', md: '0.95rem' },
-                    fontWeight: 600,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    transition: reduceMotion ? 'none' : 'letter-spacing 350ms ease',
-                  }}
-                >
-                  Player ratings
-                </Typography>
-              )}
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                className="smash-subtitle"
+                sx={{
+                  display: 'inline-block',
+                  fontSize: { xs: '0.6rem', md: '0.95rem' },
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  transition: reduceMotion ? 'none' : 'letter-spacing 350ms ease',
+                }}
+              >
+                Player ratings
+              </Typography>
             </Box>
           </Stack>
           {!isMobile && (

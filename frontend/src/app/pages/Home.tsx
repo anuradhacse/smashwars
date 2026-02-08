@@ -313,23 +313,39 @@ export function Home() {
             sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}
           >
             <Stack direction="row" spacing={2} alignItems="center">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="body2" color="text.secondary">
-                  Showing
-                </Typography>
-                <ToggleButtonGroup
-                  value={timeRange}
-                  exclusive
-                  onChange={(_e, v) => v && setTimeRange(v)}
-                  size="small"
-                  aria-label="Select time range"
-                >
-                  <ToggleButton value="3m">3M</ToggleButton>
-                  <ToggleButton value="6m">6M</ToggleButton>
-                  <ToggleButton value="12m">12M</ToggleButton>
-                  <ToggleButton value="all">All</ToggleButton>
-                </ToggleButtonGroup>
-              </Stack>
+              <Tooltip
+                title="Select time range for stats"
+                enterTouchDelay={0}
+                leaveTouchDelay={1500}
+                placement="bottom"
+                disableHoverListener={!isMobile}
+                disableFocusListener={!isMobile}
+                disableTouchListener={!isMobile}
+              >
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    noWrap
+                    sx={{ display: { xs: 'none', sm: 'block' } }}
+                  >
+                    Time range
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={timeRange}
+                    exclusive
+                    onChange={(_e, v) => v && setTimeRange(v)}
+                    size={isMobile ? 'medium' : 'small'}
+                    fullWidth={isMobile}
+                    aria-label="Select time range"
+                  >
+                    <ToggleButton value="3m">3M</ToggleButton>
+                    <ToggleButton value="6m">6M</ToggleButton>
+                    <ToggleButton value="12m">12M</ToggleButton>
+                    <ToggleButton value="all">All</ToggleButton>
+                  </ToggleButtonGroup>
+                </Stack>
+              </Tooltip>
               {!isMobile && (
                 <>
                   <Button
@@ -601,7 +617,6 @@ export function Home() {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  noWrap
                   sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}
                 >
                   {overview.insights.upsetWins?.best
@@ -633,7 +648,6 @@ export function Home() {
                     <Typography
                       variant="h5"
                       sx={{ fontWeight: 700, mb: 0.5, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
-                      noWrap
                     >
                       {overview.insights.toughestLoss.opponentName ?? 'Unknown'}
                     </Typography>
@@ -823,7 +837,7 @@ export function Home() {
               <Card sx={mobileCardSx}>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    Club snapshot
+                    Club details
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 0.5 }}>
                     {overview.club?.name ?? 'Penicuik Table Tennis Club'}
